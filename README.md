@@ -1,93 +1,126 @@
-# AI-Powered Ticket Classification and Prioritization
+# AI-Powered Ticket Classification and Resolution System
 
+## 📌 Overview
 
+Manual help desk ticket classification is often slow, error-prone, and inconsistent. This project proposes a robust, agent-based AI system to **automatically classify, prioritize, and assist in the resolution of help desk tickets**, reducing response time and improving operational efficiency.
 
-## Getting started
+The solution leverages **LLMs (via OpenAI)**, **Retrieval-Augmented Generation (RAG)**, and **LangGraph** to orchestrate autonomous agents specialized in IT support. The system integrates with **GitHub Issues** as the canonical source of tickets and exposes a user interface for engineers and requesters.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+---
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## 🎯 Objectives
 
-## Add your files
+- Automate classification of help desk tickets into L1, L2, and L3 support levels.
+- Route tickets deterministically to specialized resolution agents.
+- Use vector search and RAG to retrieve relevant past solutions.
+- Enable agents to document and learn from new resolutions dynamically.
+- Provide traceability, security, and modularity via a layered architecture.
+- Offer a frontend interface (Next.js) and backend orchestration (FastAPI).
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+---
 
-```
-cd existing_repo
-git remote add origin https://gitlab.endava.com/endava-university/agentic-ai-projects/ai-powered-ticket-classification-and-prioritization.git
-git branch -M main
-git push -uf origin main
-```
+## 📐 Architecture
 
-## Integrate with your tools
+### 🧠 Agentic Workflow (LangGraph)
+![Architecture Diagram](/documentation/Architecture.png)
 
-- [ ] [Set up project integrations](https://gitlab.endava.com/endava-university/agentic-ai-projects/ai-powered-ticket-classification-and-prioritization/-/settings/integrations)
+## 🔎 Classification Levels
 
-## Collaborate with your team
+Ticket classification is strictly scoped to typical Application Management (AM) scenarios. The classification criteria are aligned with ITIL best practices and corporate support standards.
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+### L1 Support Agent
 
-## Test and Deploy
+- **Scope**: Procedural, routine tasks with low complexity.
+- **Examples**:
+  - Password resets
+  - VPN configuration
+  - Software installation (e.g., Office)
+  - Folder access requests
+  - FAQ-level support
+- **Agent Behavior**: Resolves via direct RAG-based lookup; no reasoning required.
 
-Use the built-in continuous integration in GitLab.
+### L2 Support Agent
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+- **Scope**: Intermediate technical issues, system-specific configurations, integration problems.
+- **Examples**:
+  - Outlook profile errors
+  - AD sync issues
+  - VPN firewall blockage
+  - Advanced software malfunction
+- **Agent Behavior**: Uses RAG plus toolchain; may interpret logs or perform multi-step inference.
 
-***
+### L3 Support Agent
 
-# Editing this README
+- **Scope**: Expert-level diagnostics, code-level bugs, architectural issues, critical incidents.
+- **Examples**:
+  - Application crashes
+  - Unhandled exceptions
+  - CI/CD or deployment regression
+  - Security incident analysis
+- **Agent Behavior**: Deep reasoning, long-context evaluation, suggest code/infrastructure changes.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+## 🤖 Agent Definitions
 
-## Suggestions for a good README
+### 🧠 `ClassifierAgent`
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+- Uses OpenAI + RAG over past labeled tickets.
+- Outputs a strict label: `L1`, `L2`, or `L3`.
+- Embeds rationale and confidence score.
+- Routing is **non-negotiable**; agents may not override this decision.
 
-## Name
-Choose a self-explaining name for your project.
+### 🔧 `L1Agent`, `L2Agent`, `L3Agent`
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+- Specialize in resolution based on support level.
+- Query respective vector store segments.
+- If no solution is found, delegate to `LearnerAgent` with structured output.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+### 📚 `LearnerAgent`
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+- Summarizes solution steps.
+- Indexes new resolutions into the vector DB.
+- Can flag potential misclassifications (but not reroute).
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+## 💻 System Architecture
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+### Frontend (Next.js 14, TypeScript)
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+- Ticket submission and visualization (via GitHub Issues).
+- Interaction layer for Users (AM engineers) and Guests (requesters).
+- Secure login (future support for GitHub OAuth or enterprise auth).
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+### Backend (FastAPI, Python 3.12.8)
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+- RESTful API for ticket retrieval, classification trigger, agent orchestration.
+- Integration layer with LangGraph and OpenAI.
+- Logging, audit trail, and error handling.
+- Deployment-ready via Docker/Kubernetes.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+## 🤝 Terminology
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+| Term         | Definition                                               |
+|--------------|----------------------------------------------------------|
+| Guest        | The end user submitting a ticket via GitHub Issue       |
+| User         | Application Manager (AM) engineer resolving tickets      |
+| RAG          | Retrieval-Augmented Generation                           |
+| LangGraph    | Framework for composing stateful LLM agent workflows     |
+| Vector Store | Embedded knowledge base queried by agents via similarity |
+| Tool         | A callable function or API invoked by an agent           |
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+## 📏 Acceptance Criteria
 
-## License
-For open source projects, say how it is licensed.
+| Metric                   | Description                                                    |
+|--------------------------|----------------------------------------------------------------|
+| Classification Accuracy  | Greater than or equal to 90% on a test set of labeled tickets |
+| Response Time Reduction  | Measurable decrease in average handling time (AHT)            |
+| Coverage                 | Percentage of tickets resolved directly by L1–L3 agents       |
+| False Classification Rate| Tickets flagged by `LearnerAgent` for potential misclassification |
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+## 🚧 Known Constraints and Design Principles
+
+- Agents are **not allowed** to re-route or reclassify tickets.
+- The system favors **modularity and traceability** over dynamic agent-to-agent escalation.
+- A feedback loop from the `LearnerAgent` is used to **retrain the `ClassifierAgent`** periodically.
+- Human-in-the-loop review may be introduced in future iterations to improve oversight.
+
+## 📬 Getting Started
+To set up and run the system locally, see the [Getting_Started.md](./documentation/Getting_Started.md) guide.
