@@ -1,0 +1,77 @@
+#* General
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*.orig
+*.pem
+
+#* Environment / Secrets
+.env
+.env.local
+.env.production
+.env.development
+.env.staging
+!.env.template
+
+#* Node.js / Next.js
+node_modules/
+.pnp/
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.tsbuildinfo
+next-env.d.ts
+
+#* Next.js build/output
+.next/
+out/
+.vercel/
+build/
+
+#* Frontend structure
+frontend/node_modules/
+frontend/.next/
+frontend/.env*
+frontend/.eslintcache
+frontend/.turbo/
+frontend/out/
+frontend/.cache/
+
+#* Python / FastAPI
+backend/.venv/
+backend/__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pkl
+__pycache__/
+
+#* Pytest / Coverage
+.coverage
+.coverage.*
+.cache/
+pytest_cache/
+htmlcov/
+*.cover
+
+#* Ruff / Black / Mypy / Pytype
+ruff_cache/
+.mypy_cache/
+.pyre/
+.pytype/
+
+#* IDEs / OS / Tools
+.vscode/
+.idea/
