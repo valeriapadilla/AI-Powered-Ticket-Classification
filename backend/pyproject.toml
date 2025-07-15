@@ -1,0 +1,17 @@
+# backend/pyproject.toml
+[tool.black]
+line-length = 88
+target-version = ['py312']
+exclude = '''
+/(
+  \.venv
+  | \.git
+  | __pycache__
+)/
+'''
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+select = ["E", "F", "B", "I", "N", "UP"]
+exclude = ["__pycache__"]
