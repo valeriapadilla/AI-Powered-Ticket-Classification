@@ -10,12 +10,10 @@ Welcome to the **AI-Powered Ticket Classification and Prioritization** project. 
 * [Architecture Overview](#architecture-overview)
 * [Project Structure Justification](#project-structure-justification)
 * [Installation](#installation)
-
   * [Install All Dependencies](#install-all-dependencies)
   * [Install Frontend Only](#install-frontend-only)
   * [Install Backend Only](#install-backend-only)
 * [Development Workflow](#development-workflow)
-
   * [Run Fullstack](#run-fullstack)
   * [Run Frontend Only](#run-frontend-only)
   * [Run Backend Only](#run-backend-only)
@@ -78,6 +76,7 @@ frontend/
 ```txt
 backend/
 ├── app/
+│   ├── data/           # Training Data for the Vector DB
 │   ├── agents/         # L1, L2, L3, Classifier, Learner
 │   ├── api/            # REST endpoints
 │   ├── graph/          # LangGraph DAG definition
