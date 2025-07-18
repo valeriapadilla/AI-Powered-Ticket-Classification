@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #e53935;
+  --color-background: #ffffff;
+  --color-text: #000000;
+  --color-priority-high: #d32f2f;
+  --color-priority-medium: #fbc02d;
+  --color-priority-low: #388e3c;
+}
+
+@layer theme, base, mui, components, utilities;
