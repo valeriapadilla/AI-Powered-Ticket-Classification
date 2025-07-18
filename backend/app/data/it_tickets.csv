@@ -1,0 +1,68 @@
+id,title,description,level,priority,ETA
+1,Password Reset Request,User unable to access account due to forgotten password,L1,Low,1
+2,VPN Connection Issue,User cannot connect to VPN due to configuration error,L1,Medium,2
+3,Software Installation Failure,Office 365 installation fails on user's laptop,L1,Medium,2
+4,Folder Access Denied,User lacks permissions to access shared folder,L1,Low,1
+5,Printer Not Responding,User unable to print from network printer,L1,Low,2
+6,Email Sync Failure,Outlook not syncing emails with server,L2,Medium,3
+7,Active Directory Sync Error,User account not syncing with AD,L2,High,3
+8,VPN Firewall Block,VPN access blocked by firewall settings,L2,High,4
+9,Application Crash on Launch,Custom app crashes immediately on startup,L3,High,5
+10,CI/CD Pipeline Failure,Deployment pipeline fails at build stage,L3,High,7
+11,Password Reset for ERP System,User locked out of ERP system,L1,Medium,1
+12,Outlook Profile Corruption,User's Outlook profile fails to load,L2,Medium,3
+13,Shared Drive Access Issue,Team unable to access shared drive,L1,Low,2
+14,Software License Expired,User reports license error for IDE,L1,Medium,2
+15,Mouse Not Working,USB mouse not detected on desktop,L1,Low,1
+16,Database Connection Error,Application fails to connect to DB,L3,High,5
+17,Security Patch Failure,Patch deployment fails on server,L3,High,6
+18,Network Latency Issue,User reports slow network response,L2,Medium,4
+19,SSL Certificate Error,Website shows certificate warning,L2,High,3
+20,Login Loop Issue,User stuck in login loop on app,L2,Medium,3
+21,Password Reset for CRM,User unable to log into CRM system,L1,Low,1
+22,Application Slow Performance,ERP system running slower than usual,L3,High,5
+23,File Sync Failure,OneDrive not syncing files,L2,Medium,3
+24,Printer Driver Issue,Driver installation fails for new printer,L1,Medium,2
+25,User Account Locked,Account locked after multiple failed logins,L1,Low,1
+26,API Integration Failure,Third-party API not responding,L3,High,6
+27,Server Disk Space Full,Server reports low disk space,L2,High,3
+28,Email Attachment Issue,User cannot send large attachments,L2,Medium,3
+29,Software Update Failure,Update for accounting software fails,L2,Medium,4
+30,Permission Denied Error,User cannot access project folder,L1,Low,2
+31,Application Timeout,Web app times out during heavy load,L3,High,5
+32,VPN Authentication Failure,User credentials rejected by VPN,L2,Medium,3
+33,Firewall Rule Misconfiguration,New firewall rule blocks app access,L2,High,4
+34,Database Query Error,Custom query fails with syntax error,L3,Medium,5
+35,Screen Flickering Issue,User reports monitor flickering,L1,Low,2
+36,Unhandled Exception Error,App throws unhandled exception,L3,High,6
+37,Backup Failure,Scheduled backup job fails,L3,High,5
+38,Network Printer Offline,Printer not detected on network,L1,Medium,2
+39,User Profile Corruption,Windows profile fails to load,L2,Medium,3
+40,Deployment Regression,New release causes feature failure,L3,High,7
+41,Password Reset for HR Portal,User cannot access HR system,L1,Low,1
+42,Outlook Search Not Working,Search functionality broken in Outlook,L2,Medium,3
+43,File Access Denied,User cannot open shared Excel file,L1,Low,2
+44,Software Crash on Save,App crashes when saving data,L3,High,5
+45,Mouse Lag Issue,Wireless mouse lags on laptop,L1,Low,2
+46,API Rate Limit Exceeded,App hits API rate limit,L3,Medium,4
+47,Server Reboot Required,Server performance degraded,L2,High,3
+48,Email Delivery Failure,Emails not reaching external recipients,L2,High,4
+49,Software Compatibility Issue,New software version not compatible,L2,Medium,4
+50,Folder Permission Issue,Team cannot access shared folder,L1,Low,2
+51,Application Memory Leak,App consumes excessive memory,L3,High,6
+52,VPN Timeout Error,Connection drops after timeout,L2,Medium,3
+53,Firewall Blocking App,App blocked by new firewall rule,L2,High,4
+54,Database Deadlock,Queries stuck in deadlock state,L3,High,5
+55,Keyboard Not Responding,USB keyboard not detected,L1,Low,1
+56,Security Incident Detected,Unauthorized access attempt logged,L3,High,7
+57,Backup Restore Failure,Restore operation fails,L3,High,6
+58,Printer Queue Stuck,Print jobs stuck in queue,L1,Medium,2
+59,User Profile Sync Issue,Profile not syncing across devices,L2,Medium,3
+60,CI/CD Build Timeout,Pipeline times out during build,L3,High,7
+61,Password Reset for SaaS App,User locked out of SaaS platform,L1,Low,1
+62,Outlook Add-In Failure,Add-in causes Outlook to crash,L2,Medium,3
+63,Shared Folder Not Found,Shared folder missing from network,L1,Low,2
+64,Software Update Stuck,Update hangs at 50%,L2,Medium,4
+65,Monitor Display Issue,Second monitor not detected,L1,Low,2
+66,API Authentication Error,API rejects token,L3,High,5
+67,Server Out of Memory,Server crashes due to memory exhaustion,L3,High,5
