@@ -10,7 +10,8 @@ load_dotenv()
 
 docs = []
 
-DATA_DIR = Path("../data")
+DATA_DIR = Path("app/data/tickets")
+
 if not DATA_DIR.exists():
     raise FileNotFoundError(f"Data directory {DATA_DIR} not found")
 
@@ -43,6 +44,6 @@ embeddings = OpenAIEmbeddings()
 vector_store = Chroma.from_documents(
     documents=chunks,
     embedding=embeddings,
-    persist_directory="vector_store"
+    persist_directory="vector_store/it_tickets_vector_store"
 )
-print("vector created ./vector_store")
+print("vector created ")
