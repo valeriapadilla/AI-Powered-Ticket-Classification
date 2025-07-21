@@ -24,8 +24,8 @@ def classify_ticket(issue: Issue) -> ClassifiedTicket:
 
 if __name__ == "__main__":
     dummy_issue = Issue(
-        title       = "User cannot log into the system",
-        description = "Error: Invalid credentials.",
+        title       = "Password Reset Request",
+        description = "User unable to access account due to forgotten password",
         created_at   = datetime.now(timezone.utc)
     )
 

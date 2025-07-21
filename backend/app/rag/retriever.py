@@ -4,7 +4,6 @@ from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 
 load_dotenv()
-VECTOR_STORE_DIR = "vector_store"
 
 def default_k() -> int:
     try:
@@ -12,19 +11,12 @@ def default_k() -> int:
     except ValueError:
         return 3
 
-def get_retriever(k: int = None):
-    """
-    Load the persisted Chroma vector store and return a retriever.
-    Args:
-        k: number of similar chunks to retrieve (defaults to RETRIEVER_K env or 3).
-    Returns:
-        A LangChain retriever instance.
-    """
+def get_retriever(vector_store_path="vector_store", k: int = None):
     if k is None:
         k = default_k()
 
     vs = Chroma(
-        persist_directory=VECTOR_STORE_DIR,
+        persist_directory=vector_store_path,
         embedding_function=OpenAIEmbeddings(),
     )
 
