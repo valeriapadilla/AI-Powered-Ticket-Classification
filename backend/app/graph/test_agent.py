@@ -7,7 +7,7 @@ sys.path.insert(0, str(backend_dir))
 
 from app.models.issue        import Issue
 from app.models.classification import ClassifiedTicket
-from classification_graph     import agent  
+from .classification_graph     import agent  
 
 def classify_ticket(issue: Issue) -> ClassifiedTicket:
     payload = issue.model_dump()  

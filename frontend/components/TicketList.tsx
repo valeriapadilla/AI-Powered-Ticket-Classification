@@ -1,5 +1,5 @@
-import TicketCard from '@/components/TicketCard'
-import type { Ticket } from '@/data/mockTickets'
+import TicketCard from './TicketCard'
+import type { Ticket } from '@/types/ticket'
 
 type TicketListProps = {
   tickets: Ticket[]
@@ -10,7 +10,7 @@ export default function TicketList({ tickets, onSelect }: TicketListProps) {
   return (
     <div className="space-y-3">
       {tickets.map((t) => (
-        <TicketCard key={t.id} ticket={t} onClick={() => onSelect(t)} />
+        <TicketCard key={t.github_issue_id} ticket={t} onClick={() => onSelect(t)} />
       ))}
     </div>
   )

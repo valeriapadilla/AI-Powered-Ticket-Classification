@@ -4,27 +4,29 @@ import { Drawer, IconButton, useMediaQuery, Button } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { useTheme } from '@mui/material/styles'
 import { useState, useEffect } from 'react'
-import type { Ticket } from '@/data/mockTickets'
+import { classifyTicket } from '@/lib/api'
+import type { Ticket } from '@/types/ticket'
 
 type TicketDrawerProps = {
   ticket: Ticket | null
   onClose: () => void
+  onUpdate?: (updated: Ticket) => void
 }
 
-export default function TicketDrawer({ ticket, onClose }: TicketDrawerProps) {
+export default function TicketDrawer({ ticket, onClose, onUpdate }: TicketDrawerProps) {
   const isOpen = !!ticket
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
-  const [editableLevel, setEditableLevel] = useState('l1')
-  const [editablePriority, setEditablePriority] = useState('low')
-  const [editableEta, setEditableEta] = useState(0)
+  const [editableLevel, setEditableLevel] = useState('L1')
+  const [editablePriority, setEditablePriority] = useState<'Low' | 'Medium' | 'High'>('Low')
+  const [editableEta, setEditableEta] = useState<number>(0)
 
   useEffect(() => {
     if (ticket) {
       setEditableLevel(ticket.level)
-      setEditablePriority(ticket.priority)
-      setEditableEta(ticket.eta)
+      setEditablePriority(ticket.priority as 'Low' | 'Medium' | 'High')
+      setEditableEta(ticket.eta ?? 0)
     }
   }, [ticket])
 
@@ -32,15 +34,32 @@ export default function TicketDrawer({ ticket, onClose }: TicketDrawerProps) {
     onClose()
   }
 
-  const handleAccept = () => {
-    console.log({
-      level: editableLevel,
-      priority: editablePriority,
-      eta: editableEta,
-    })
+  const handleAccept = async () => {
+    if (!ticket) return
+
+    try {
+      await classifyTicket(ticket.github_issue_id, {
+        level: editableLevel,
+        priority: editablePriority,
+        eta: editableEta,
+      })
+
+      if (onUpdate) {
+        onUpdate({
+          ...ticket,
+          level: editableLevel,
+          priority: editablePriority,
+          eta: editableEta,
+        })
+      }
+
+      onClose()
+    } catch (err) {
+      alert('Error updating the ticket')
+    }
   }
 
-  const isEditable = ticket?.status === 'pending'
+  const isEditable = ticket?.status === 'Pending'
 
   return (
     <Drawer
@@ -75,11 +94,10 @@ export default function TicketDrawer({ ticket, onClose }: TicketDrawerProps) {
           </div>
           <ul className="space-y-2 text-sm">
             <li>
-              <strong>Status:</strong>{' '}
-              {ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)}
+              <strong>Status:</strong> {ticket.status}
             </li>
             <li>
-              <strong>Description:</strong> {ticket.description}
+              <strong>Description:</strong> {ticket.body || '—'}
             </li>
             <li>
               <strong>Level:</strong>{' '}
@@ -89,12 +107,12 @@ export default function TicketDrawer({ ticket, onClose }: TicketDrawerProps) {
                   value={editableLevel}
                   onChange={(e) => setEditableLevel(e.target.value)}
                 >
-                  <option value="l1">L1</option>
-                  <option value="l2">L2</option>
-                  <option value="l3">L3</option>
+                  <option value="L1">L1</option>
+                  <option value="L2">L2</option>
+                  <option value="L3">L3</option>
                 </select>
               ) : (
-                ticket.level.toUpperCase()
+                ticket.level ?? '—'
               )}
             </li>
             <li>
@@ -103,15 +121,17 @@ export default function TicketDrawer({ ticket, onClose }: TicketDrawerProps) {
                 <select
                   className="border px-2 py-1 rounded w-full"
                   value={editablePriority}
-                  onChange={(e) => setEditablePriority(e.target.value)}
+                  onChange={(e) =>
+                    setEditablePriority(e.target.value as 'Low' | 'Medium' | 'High')
+                  }
                 >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
                 </select>
               ) : (
-                <span className={`text-priority-${ticket.priority}`}>
-                  {ticket.priority.charAt(0).toUpperCase() + ticket.priority.slice(1)}
+                <span className={`text-priority-${ticket.priority?.toLowerCase?.()}`}>
+                  {ticket.priority ?? '—'}
                 </span>
               )}
             </li>
@@ -126,7 +146,7 @@ export default function TicketDrawer({ ticket, onClose }: TicketDrawerProps) {
                   min={0}
                 />
               ) : (
-                ticket.eta
+                ticket.eta ?? '—'
               )}
             </li>
           </ul>
@@ -136,7 +156,7 @@ export default function TicketDrawer({ ticket, onClose }: TicketDrawerProps) {
               variant="contained"
               color="primary"
               onClick={handleAccept}
-              className="w-full"
+              className="w-full mt-4"
             >
               Aceptar
             </Button>
