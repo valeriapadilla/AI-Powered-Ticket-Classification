@@ -20,7 +20,7 @@ try:
     print("Starting ingest process...")
     
     # Import the ingest module
-    from ingest import *
+    from backend.app.rag.ingest_tickets import *
     
     print("✅ Ingest completed successfully!")
     print("📁 Vector database created in ./vector_store")
