@@ -10,9 +10,11 @@ load_dotenv()
 
 docs = []
 
-DATA_DIR = Path("app/data/tickets")
-if not DATA_DIR.exists():
-    raise FileNotFoundError(f"Data directory {DATA_DIR} not found")
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+VECTOR_STORE_DIR = BASE_DIR / "app" /"rag" /"vector_store" / "it_tickets_vector_store"
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+DATA_DIR = BASE_DIR / "app" / "data" / "tickets"
 
 for csv_path in DATA_DIR.glob("*.csv"):
     df = pd.read_csv(csv_path)
@@ -20,15 +22,11 @@ for csv_path in DATA_DIR.glob("*.csv"):
         content = (
             f"Title: {row.title}\n"
             f"Description: {row.description}\n"
+            f"Level: {row.level}\n"
+            f"Priority: {row.priority}\n"
+            f"ETA: {row.ETA}\n"
         )
-        metadata = {
-            "id": row.id,
-            "title": row.title,
-            "level": row.level, #l1,l2,l3
-            "priority": row.priority, #low, medium, high
-            "ETA": row.ETA,
-        }
-        docs.append(Document(page_content=content, metadata=metadata))
+        docs.append(Document(page_content=content))
 print(f"{len(docs)} upload document")
 
 text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
@@ -43,6 +41,6 @@ embeddings = OpenAIEmbeddings()
 vector_store = Chroma.from_documents(
     documents=chunks,
     embedding=embeddings,
-    persist_directory="./vector_store/it_tickets_vector_store"
+    persist_directory=str(VECTOR_STORE_DIR)
 )
 print("vector created ")
