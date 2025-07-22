@@ -1,4 +1,4 @@
-import type { Ticket } from '@/data/mockTickets'
+import type { Ticket } from '@/types/ticket'
 
 type TicketCardProps = {
   ticket: Ticket
@@ -7,14 +7,12 @@ type TicketCardProps = {
 
 export default function TicketCard({ ticket, onClick }: TicketCardProps) {
   const priorityColorMap: Record<Ticket['priority'], string> = {
-    high: 'text-priority-high',
-    medium: 'text-priority-medium',
-    low: 'text-priority-low',
+    High: 'text-priority-high',
+    Medium: 'text-priority-medium',
+    Low: 'text-priority-low',
   }
 
   const priorityClass = priorityColorMap[ticket.priority]
-  const priorityText =
-    ticket.priority.charAt(0).toUpperCase() + ticket.priority.slice(1)
 
   return (
     <div
@@ -23,8 +21,9 @@ export default function TicketCard({ ticket, onClick }: TicketCardProps) {
     >
       <h3 className="font-semibold">{ticket.title}</h3>
       <p className={`text-sm font-medium ${priorityClass}`}>
-        {priorityText}
+        Priority: {ticket.priority}
       </p>
+      <p className="text-sm">ETA: {ticket.eta ?? 'N/A'} days</p>
     </div>
   )
 }

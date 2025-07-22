@@ -16,6 +16,7 @@ Thumbs.db
 .env.development
 .env.staging
 !.env.template
+venv/
 
 #* Node.js / Next.js
 node_modules/
@@ -75,3 +76,6 @@ ruff_cache/
 #* IDEs / OS / Tools
 .vscode/
 .idea/
+
+#DB
+issues.db
