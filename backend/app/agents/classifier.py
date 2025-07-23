@@ -13,7 +13,6 @@ from app.rag.retriever import get_retriever
 from app.agents.prompts.retrieve_tickets_sysmsg import retrieve_tickets_sysmsg
 from app.agents.prompts.grade_prompt import grade_prompt
 from app.agents.prompts.rewrite_prompt import rewrite_prompt
- 
 from app.models.issue import Issue
  
 from typing import TypedDict, List, Union, Literal
@@ -31,7 +30,8 @@ class IssueState(TypedDict, total=False):
     level: str
     priority: str
     eta: str
- 
+    retrieved_context: str
+
 retriever = get_retriever("vector_store/it_tickets_vector_store", k=3)
 ticket_tool = create_retriever_tool(
     retriever,
@@ -53,14 +53,14 @@ def receive_issue( issue: Issue) -> IssueState:
     }
  
 def retrieve_similar_tickets(state : IssueState) -> IssueState:
-    messages = [SystemMessage(content=retrieve_tickets_sysmsg)] + state["messages"]
-    response = llm.bind_tools([ticket_tool]).invoke(messages)
+    query = f"{state['title']}\n{state['description']}"
+    retrieved_docs = retriever.invoke(query)
+    context = "\n".join([doc.page_content for doc in retrieved_docs])
     return {
          **state,
-        "messages": state["messages"] + [response],
-        "refined": state["refined"]
+         "retrieved_context": context
     }
- 
+
 class GradeDocuments(BaseModel):
     """Grade ticket excerpt using a binary score for relevance check."""
  
@@ -71,8 +71,7 @@ class GradeDocuments(BaseModel):
 def grade_relevance(state: IssueState) -> Dict[str, Any]:
     """"Grade the relevance of retrieved tickets to the user request."""
     question = state["messages"][0].content
-    context = state["messages"][-1].content
- 
+    context = state.get("retrieved_context", "")
     prompt = grade_prompt.format(question=question, context=context)
     response = (
         llm
@@ -104,7 +103,7 @@ def refine_query(state: IssueState) -> IssueState:
  
 def classify_level(state: IssueState) -> IssueState:
     ticket_content = state["messages"][0].content
-    retrieved_context = state["messages"][-1].content if len(state["messages"])>1 else ""
+    retrieved_context = state.get("retrieved_context", "") if len(state["messages"])>1 else ""
     prompt = level_template.format(question=ticket_content, context=retrieved_context)
     res = llm.invoke([HumanMessage(content=prompt)])
    
@@ -113,14 +112,14 @@ def classify_level(state: IssueState) -> IssueState:
         raise ValueError(f"Incorrect response: {res.content!r}")
     return {
         **state,
-        "messages": state["messages"] + [res],
+        "messages": state["messages"] + [res], 
         "refined": state["refined"],
         "level": level
     }
  
 def classify_priority(state: IssueState) -> IssueState:
     ticket_content = state["messages"][0].content
-    retrieved_context = state["messages"][-1].content
+    retrieved_context = state.get("retrieved_context", "")
     prompt = priority_template.format(question=ticket_content, context=retrieved_context)
     res = llm.invoke([HumanMessage(content=prompt)])
    
@@ -130,7 +129,7 @@ def classify_priority(state: IssueState) -> IssueState:
    
     return {
         **state,
-        "messages": state["messages"] + [res],
+        "messages": state["messages"] + [res], 
         "refined": state["refined"],
         "level": state.get("level", "L1"),
         "priority": priority
@@ -138,7 +137,7 @@ def classify_priority(state: IssueState) -> IssueState:
  
 def estimate_eta(state: IssueState) -> IssueState:
     ticket_content = state["messages"][0].content
-    retrieved_context = state["messages"][-1].content
+    retrieved_context = state.get("retrieved_context", "")
     prompt = eta_template.format(question=ticket_content, context=retrieved_context)
     res = llm.invoke([HumanMessage(content=prompt)])
     if isinstance(int(res.content), int):
@@ -146,7 +145,7 @@ def estimate_eta(state: IssueState) -> IssueState:
  
     return {
         **state,
-        "messages": state["messages"] + [res],
+        "messages": state["messages"] + [res], 
         "refined": state["refined"],
         "level": state.get("level", "L1"),
         "priority": state.get("priority", "medium"),

@@ -24,11 +24,13 @@ def classify_ticket(issue: Issue) -> ClassifiedTicket:
 
 if __name__ == "__main__":
     dummy_issue = Issue(
-        title       = "Password Reset Request",
-        description = "User unable to access account due to forgotten password",
+        title       = "CI/CD Pipeline Failure",
+        description = "Deployment pipeline fails at build stage",
         created_at   = datetime.now(timezone.utc)
     )
 
     result = classify_ticket(dummy_issue)
     print("Resultado de clasificación:")
     print(result)
+
+    
