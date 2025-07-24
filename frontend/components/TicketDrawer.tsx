@@ -1,6 +1,6 @@
 'use client'
 
-import { Drawer, IconButton, useMediaQuery, Button } from '@mui/material'
+import { Drawer, IconButton, useMediaQuery, Button, CircularProgress } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { useTheme } from '@mui/material/styles'
 import { useState, useEffect } from 'react'
@@ -21,6 +21,7 @@ export default function TicketDrawer({ ticket, onClose, onUpdate }: TicketDrawer
   const [editableLevel, setEditableLevel] = useState('L1')
   const [editablePriority, setEditablePriority] = useState<'Low' | 'Medium' | 'High'>('Low')
   const [editableEta, setEditableEta] = useState<number>(0)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     if (ticket) {
@@ -37,6 +38,8 @@ export default function TicketDrawer({ ticket, onClose, onUpdate }: TicketDrawer
   const handleAccept = async () => {
     if (!ticket) return
 
+    setIsSubmitting(true)
+
     try {
       await classifyTicket(ticket.github_issue_id, {
         level: editableLevel,
@@ -52,10 +55,11 @@ export default function TicketDrawer({ ticket, onClose, onUpdate }: TicketDrawer
           eta: editableEta,
         })
       }
-
-      onClose()
     } catch (err) {
       alert('Error updating the ticket')
+    } finally {
+      setIsSubmitting(false)
+      onClose()
     }
   }
 
@@ -157,8 +161,10 @@ export default function TicketDrawer({ ticket, onClose, onUpdate }: TicketDrawer
               color="primary"
               onClick={handleAccept}
               className="w-full mt-4"
+              disabled={isSubmitting}
+              startIcon={isSubmitting ? <CircularProgress size={18} /> : null}
             >
-              Aceptar
+              {isSubmitting ? 'Updating...' : 'Accept'}
             </Button>
           )}
         </>
