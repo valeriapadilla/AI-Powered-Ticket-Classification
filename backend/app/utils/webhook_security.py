@@ -1,8 +1,8 @@
 import hmac, hashlib, os
 
-SECRET = os.getenv("GH_WEBHOOK_SECRET", "")
-
 def verify_signature(payload: bytes, signature: str | None) -> bool:
+    SECRET = os.getenv("GH_WEBHOOK_SECRET", "")
+
     if not signature or not SECRET:
         return False
     try:

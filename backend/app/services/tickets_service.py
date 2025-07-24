@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from ..models.Issue_db import Issue_db, StatusEnum
 from ..schemas.ticket_update import TicketUpdate
+from ..services.github_auth import get_installation_token, get_installation_id
+from ..services.github_api import call_github
 
 def get_all_tickets(db: Session):
     tickets = db.query(Issue_db).all()
@@ -22,3 +24,25 @@ def update_ticket_classification(ticket_id: int, update_data: TicketUpdate, db: 
     db.commit()
     db.refresh(ticket)
     return ticket
+
+async def sync_github_labels_for_ticket(ticket: Issue_db, repo: str, owner: str):
+    labels = []
+
+    if ticket.level_label:
+        labels.append(ticket.level_label.upper())
+
+    if ticket.priority_label:
+        labels.append(ticket.priority_label.capitalize())
+
+    if ticket.eta is not None:
+        labels.append(f"{ticket.eta} days")
+
+    installation_id = await get_installation_id(owner)
+    token = await get_installation_token(installation_id)
+
+    await call_github(
+        "POST",
+        f"/repos/{owner}/{repo}/issues/{ticket.github_issue_id}/labels",
+        token,
+        json={"labels": labels},
+    )

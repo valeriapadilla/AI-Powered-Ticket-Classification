@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 #from models.schemas import IssueCreate, IssueOut
 import json
 from ..models.issue import Issue
-from ..utils.webhook_security import verify_signature, SECRET
+from ..utils.webhook_security import verify_signature
 from ..db.db import Base, engine, SessionLocal
 from ..models.Issue_db import Issue_db, StatusEnum
 from ..graph.test_agent import classify_ticket
@@ -26,11 +26,11 @@ async def github_webhook(
 ):
     raw = await request.body()
 
-    # if verify_signature(raw, x_hub_signature_256):
-    #     print("Signature verified")
-    # else:
-    #     print("Invalid signature")
-    #     raise HTTPException(status_code=403, detail="Invalid signature")
+    if verify_signature(raw, x_hub_signature_256):
+        print("Signature verified")
+    else:
+        print("Invalid signature")
+        raise HTTPException(status_code=403, detail="Invalid signature")
 
     payload = json.loads(raw)
 
@@ -38,7 +38,7 @@ async def github_webhook(
         raise HTTPException(status_code=400, detail="Not an issue opened event")
     
     issue = payload["issue"]
-    github_issue_id = issue["id"]
+    github_issue_id = issue["number"]
     title = issue["title"]
     created_at = issue["created_at"]
     created_at = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
